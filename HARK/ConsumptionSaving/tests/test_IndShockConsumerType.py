@@ -357,3 +357,18 @@ class testIndShockConsumerTypeCyclical(unittest.TestCase):
         self.assertAlmostEqual(
             CyclicalExample.solution[3].cFunc(3).tolist(), 1.5958390056965004
         )
+
+    def test_finite_cyclical(self):
+        FiniteCyclicalDict = CyclicalDict.copy()
+        FiniteCyclicalDict['T_age'] = 60
+
+        FiniteCyclicalExample = IndShockConsumerType(**FiniteCyclicalDict)
+        # Do NOT set cycles = 0
+        FiniteCyclicalExample.solve()
+
+        FiniteCyclicalExample.unpack('cFunc')
+
+        self.assertAlmostEqual(
+            FiniteCyclicalExample.solution[3].cFunc(3).tolist(),
+            2.0425097760837487
+        )
