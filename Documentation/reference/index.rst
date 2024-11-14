@@ -10,6 +10,7 @@ API Reference
    tools/distribution
    tools/econforgeinterp
    tools/estimation
+   tools/frame
    tools/helpers
    tools/interpolation
    tools/incomeprocess
