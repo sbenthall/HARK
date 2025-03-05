@@ -1,5 +1,5 @@
 import HARK.algos.vbi as vbi
-from HARK.distribution import Bernoulli
+from HARK.distributions import Bernoulli
 from HARK.model import Control, DBlock
 import HARK.models.consumer as cons
 import numpy as np
