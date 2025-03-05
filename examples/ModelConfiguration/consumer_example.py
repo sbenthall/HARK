@@ -29,56 +29,59 @@ model_config = {
         "BoroCnstArt": None,
         "TranShkStd": 0.1,
     },
-    "blocks": [
-        {
-            "name": "consumption normalized",
-            "shocks": {
-                "live": [Bernoulli, {"p": "LivPrb"}],
-                "theta": [MeanOneLogNormal, {"sigma": "TranShkStd"}],
+    "agent": {
+        "size": 10,  # the population size. Is this only for the simulation?
+        "blocks": [
+            {
+                "name": "consumption normalized",
+                "shocks": {
+                    "live": [Bernoulli, {"p": "LivPrb"}],
+                    "theta": [MeanOneLogNormal, {"sigma": "TranShkStd"}],
+                },
+                "dynamics": {
+                    "b": lambda k, R, PermGroFac: k * R / PermGroFac,
+                    "m": lambda b, theta: b + theta,
+                    "c": Control(["m"]),
+                    "a": lambda m, c: m - c,
+                },
+                "reward": {"u": lambda c, CRRA: c ** (1 - CRRA) / (1 - CRRA)},
             },
-            "dynamics": {
-                "b": lambda k, R, PermGroFac: k * R / PermGroFac,
-                "m": lambda b, theta: b + theta,
-                "c": Control(["m"]),
-                "a": lambda m, c: m - c,
+            {
+                "name": "portfolio",
+                "shocks": {
+                    "risky_return": [
+                        Lognormal.from_mean_std,
+                        {"mean": "Rfree + EqP", "std": 0.1},
+                    ]
+                },
+                "dynamics": {
+                    "stigma": Control(["a"]),
+                    "R": lambda stigma, Rfree, risky_return: Rfree
+                    + (risky_return - Rfree) * stigma,
+                },
             },
-            "reward": {"u": lambda c, CRRA: c ** (1 - CRRA) / (1 - CRRA)},
-        },
-        {
-            "name": "portfolio",
-            "shocks": {
-                "risky_return": [
-                    Lognormal.from_mean_std,
-                    {"mean": "Rfree + EqP", "std": 0.1},
-                ]
+            {
+                "name": "tick",
+                "dynamics": {
+                    "k": lambda a: a,
+                },
             },
-            "dynamics": {
-                "stigma": Control(["a"]),
-                "R": lambda stigma, Rfree, risky_return: Rfree
-                + (risky_return - Rfree) * stigma,
-            },
-        },
-        {
-            "name": "tick",
-            "dynamics": {
-                "k": lambda a: a,
-            },
-        },
-    ],
+        ],
+    },
     "approximation": {
         "theta": {"N": 5},
         "risky_return": {"N": 5},
     },
-    # "workflows": [
-    #    {"action": "solve", "algorithm": "vbi"},
-    #    {
-    #        "action": "simulate",
-    #        "initialization": {  # initial values # type: ignore
-    #            "k": Lognormal(-6, 0),
-    #            "R": 1.03,
-    #        },
-    #        "population": 10,  # ten agents
-    #        "T": 20,  # total number of simulated periods
-    #    },
-    # ],
+    "workflows": [
+        {"action": "solve", "algorithm": "vbi"},
+        {
+            "action": "simulate",
+            "initialization": {  # initial values # type: ignore
+                "k": Lognormal(-6, 0),
+                "R": 1.03,
+            },
+            "population": 10,  # ten agents
+            "T": 20,  # total number of simulated periods
+        },
+    ],
 }
