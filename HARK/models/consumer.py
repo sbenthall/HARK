@@ -7,6 +7,12 @@ in the style of Carroll's "Solution Methods for Solving
 Microeconomic Dynamic Stochastic Optimization Problems"
 """
 
+<<<<<<< HEAD
+=======
+# TODO: Include these in calibration, then construct shocks
+
+
+>>>>>>> 4c58ca7f (only source inputs to shocks from within calibrations scope)
 calibration = {
     "DiscFac": 0.96,
     "CRRA": 2.0,
@@ -16,16 +22,25 @@ calibration = {
     "LivPrb": 0.98,
     "PermGroFac": 1.01,
     "BoroCnstArt": None,
+<<<<<<< HEAD
     "TranShkStd": 0.1,
     "RiskyStd": 0.1,
+=======
+    "TranShkStd" : 0.1
+>>>>>>> 4c58ca7f (only source inputs to shocks from within calibrations scope)
 }
 
 consumption_block = DBlock(
     **{
         "name": "consumption",
         "shocks": {
+<<<<<<< HEAD
             "live": (Bernoulli, {"p": "LivPrb"}),  # Move to tick or mortality block?
             "theta": (MeanOneLogNormal, {"sigma": "TranShkStd"}),
+=======
+            "live": Bernoulli(p=calibration["LivPrb"]),  # Move to tick or mortality block?
+            "theta": MeanOneLogNormal(sigma=calibration["TranShkStd"]),
+>>>>>>> 4c58ca7f (only source inputs to shocks from within calibrations scope)
         },
         "dynamics": {
             "b": lambda k, R: k * R,
@@ -43,8 +58,13 @@ consumption_block_normalized = DBlock(
     **{
         "name": "consumption normalized",
         "shocks": {
+<<<<<<< HEAD
             "live": (Bernoulli, {"p": "LivPrb"}),  # Move to tick or mortality block?
             "theta": (MeanOneLogNormal, {"sigma": "TranShkStd"}),
+=======
+            "live": Bernoulli(p=calibration["LivPrb"]),  # Move to tick or mortality block?
+            "theta": MeanOneLogNormal(sigma=calibration["TranShkStd"]),
+>>>>>>> 4c58ca7f (only source inputs to shocks from within calibrations scope)
         },
         "dynamics": {
             "b": lambda k, R, PermGroFac: k * R / PermGroFac,
@@ -60,7 +80,13 @@ portfolio_block = DBlock(
     **{
         "name": "portfolio",
         "shocks": {
+<<<<<<< HEAD
             "risky_return": (Lognormal, {"mean": "Rfree + EqP", "std": "RiskyStd"})
+=======
+            "risky_return": Lognormal.from_mean_std(
+                calibration["Rfree"] + calibration["EqP"],  0.1 # RiskyStd
+            )
+>>>>>>> 4c58ca7f (only source inputs to shocks from within calibrations scope)
         },
         "dynamics": {
             "stigma": Control(["a"]),
